@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
-//git test
+
 public class ReadExample
 {
 	public static void main(String[] args)
@@ -26,6 +26,7 @@ public class ReadExample
 			double max = Double.MIN_VALUE;
 			int buffers=0;
 			int turn=0;
+			//framesA correspond to left channel and framesB correspond to the right one
 			ArrayList<Double> framesA = new ArrayList<Double>();
 			ArrayList<Double> framesB = new ArrayList<Double>();
 			//aList.addAll(Arrays.asList(question2));
@@ -46,10 +47,10 @@ public class ReadExample
 				//System.out.println(Arrays.toString(buffer));
 				for(double b: buffer){
 					if(turn==0){
-					framesA.add(new Double(b));
+					framesA.add(new Double(Math.abs(b)));
 					turn=1;
 					}else{
-						framesB.add(new Double(b));
+						framesB.add(new Double(Math.abs(b)));
 						turn=0;
 					}
 				}
@@ -59,14 +60,14 @@ public class ReadExample
 			}
 			while (framesRead != 0);
 			
+			
 			Double[] arrayA = framesA.toArray(new Double[framesA.size()]);
 			Double[] arrayB = framesB.toArray(new Double[framesB.size()]);
 			
-			System.out.println(arrayA.length);
-			System.out.println(arrayB.length);
+			//monoFrames: mono version of wav
 			Double[] monoFrames = new Double[arrayA.length];
 			for(int i = 0; i<arrayA.length;i++){
-				monoFrames[i]=arrayA[i]+arrayB[i];
+				monoFrames[i]=(arrayA[i]+arrayB[i])/2.0; //average of both channels
 			}
 			//print array
 		

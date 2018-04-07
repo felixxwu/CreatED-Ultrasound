@@ -15,12 +15,14 @@ public class WaveGenerator
          // Create a wav file with the name specified as the first argument
          WavFile wavFile = WavFile.newWavFile(new File(args[0]), 1, numFrames, 16, sampleRate);
          int bufferLength = 300;
-         // Create a buffer of 100 frames
+         // Create a buffer of 100 frame s
          double[][] buffer = new double[1][bufferLength];
-         int[] message = {0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1};
+         int[] message = {0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,
+        		 		  0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,
+        		 		  0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
          // Initialise a local frame counter
          long frameCounter = 0;
-         double basicFreq=21000;
+         double basicFreq=21100;
          double smoother =0;
          int alternating = 0;
          for(int m :message){
