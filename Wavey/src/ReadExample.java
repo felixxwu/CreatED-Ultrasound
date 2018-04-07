@@ -102,4 +102,54 @@ public class ReadExample
 			System.err.println(e);
 		}
 	}
+
+	// O(n)
+	public static double[] normalise(double[] input) {
+		// worst case for both
+		double max = -1;
+		double min = 1;
+		for (int i = 0; i < input.length; i++) {
+			// update max
+			if (input[i] > max) {
+				max = input[i];
+			}
+			//update min
+			if (input[i] < min) {
+				min = input[i];
+			}
+		}
+
+		double scale = (max - min) / 2.0;
+		double middle = (max + min) / 2.0;
+
+		System.out.println(middle);
+		System.out.println(scale);
+
+		double[] out = new double[input.length];
+		for (int i = 0; i < input.length; i++) {
+			out[i] = (input[i] - middle) / (double) scale;
+		}
+
+		return out;
+	}
+
+	// input must be absolute !!!
+	public static bool isPeak(double[] input, int pos) {
+		int sumWindow = 30;
+		double threshold = 3;	// returns true if sumAfter is "threshold" times more than sumBefore
+		if (pos < sumWindow) return false;	// discard peaks at the start (avoid negative index)
+		double sumBefore = 0;	// sum of all values between -sumWindow and pos (values before)
+		double sumAfter = 0;	// sum of all values between pos and sumWindow (values after)
+
+		// summing before
+		for (int i = (-1) * sumWindow; i < 0; i++) { sumBefore += input[pos + i]; }
+
+		// summing after
+		for (int i = 0; sumWindow; i++) { sumAfter += input[pos + i]; }
+
+		// if ratio of after:before is > threshold, return true
+		if (sumAfter / (double) sumBefore > threshold) return true;
+		return false;
+
+	}
 }
