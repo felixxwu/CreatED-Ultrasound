@@ -1,4 +1,6 @@
-import java.io.File;
+import java.io.*;
+import javax.sound.sampled.*;
+import java.awt.Desktop;
 
 public class WaveGenerator{
     public static void main(String[] args)
@@ -12,7 +14,7 @@ public class WaveGenerator{
             long numFrames = (long)(duration * sampleRate);
 
             // Create a wav file with the name specified as the first argument
-            WavFile wavFile = WavFile.newWavFile(new File(args[0]), 1, numFrames, 16, sampleRate);
+            WavFile wavFile = WavFile.newWavFile(new File("wav.wav"), 1, numFrames, 16, sampleRate);
             int bufferLength = 290;
             // Create a buffer of 100 frame s
             double[][] buffer = new double[1][bufferLength];
@@ -45,7 +47,7 @@ public class WaveGenerator{
                    }
                    if(s>toWrite-smootherInterval){
                        smoother=Math.pow((toWrite-s)/smootherInterval,3.5);
-                       System.out.println(smoother);
+                       // System.out.println(smoother);
                    }
                }
            }
@@ -73,6 +75,9 @@ public class WaveGenerator{
 
          // Close the wavFile
        wavFile.close();
+
+       Desktop.getDesktop().open(new File("wav.wav"));
+
    }
    catch (Exception e)
    {
@@ -236,6 +241,8 @@ public static String decode(int[] code) {
     }
     return out;
 }
+
+
 
 
    //-_.~!*'();:@&=+$,/?#[]
