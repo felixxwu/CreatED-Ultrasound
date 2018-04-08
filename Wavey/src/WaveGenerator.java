@@ -245,6 +245,8 @@ public static String decode(int[] code) {
 }
 
 
+
+
    //-_.~!*'();:@&=+$,/?#[]
 //   public static int[][] charCodes() {
 //	   int i = 0;
