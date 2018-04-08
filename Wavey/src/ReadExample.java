@@ -8,7 +8,10 @@ public class ReadExample
 	public static void main(String[] args)
 	{
 		try
-		{
+		{	
+			
+			
+			
 			// Open the wav file specified as the first argument
 			WavFile wavFile = WavFile.openWavFile(new File("felix3.wav"));
 
@@ -81,6 +84,9 @@ public class ReadExample
 		    int[] peaks = periodicPeaks(neighbourDifference,290,132032);
 		    
 		    
+		    exportWav(smoothOut(monoFrames,10), "smooth.wav");
+		    
+		    
 		    
 		    //TESTTT
 		    Double[] peakTest = new Double[132032];
@@ -88,7 +94,7 @@ public class ReadExample
 		    for(int p: peaks){
 		    	peakTest[p]=1.0;
 		    }
-		    exportWav(peakTest,"peakTest.wav");
+//		    exportWav(peakTest,"peakTest.wav");
 		    		
 		    //System.out.println(Arrays.toString(peaks));
 		    
@@ -233,6 +239,23 @@ public class ReadExample
 		  {
 		     System.err.println(e);
 		  }
+	}
+	
+	public static Double[] smoothOut(Double[] input, int smooth) {
+		Double[] out = new Double[input.length];
+		for (int i = 0; i < input.length; i++) {
+			if (i < smooth || i > input.length - smooth) {
+				out[i] = 0.0;
+			} else {
+				// sum neighboring values
+				double avg = 0;
+				for (int j = (-1) * smooth; j < smooth; j++) {
+					avg += Math.abs(input[i + j]);
+				}
+				out[i] = (avg / ((double) smooth * 2.0)) - 1.0;
+			}
+		}
+		return out;
 	}
 }
 
