@@ -98,10 +98,11 @@ public class ReadExample
 		    //DECRIPTS ARRAY
 		    //TRY WITH positiveMono and neighbourDifference
 		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks,290);
+		    int[] fakeExample = {0,1,0,1,1,1,1,1,1,1,0,1,0,1,0,0,1,1,1,1,1,1,1,0,1,1};
+		    int[] endCode= {0,1,1,1,1,1,1,1,0};
+		    int[] trimmedDecrypted = WaveDecrypter.trim(fakeExample,endCode);
+		    System.out.println(Arrays.toString(trimmedDecrypted));
 		    ArrayList<Double> decryptedOut = new ArrayList<Double>();
-		    int[] originalMessage= {0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
-		    int[] decryptedMessage={0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
-		    System.out.println(originalMessage.length);
 		    
 		                           
 		    //print decrypted array to wave (hi-lo )
