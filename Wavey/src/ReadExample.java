@@ -100,7 +100,7 @@ public class ReadExample
 		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks,290);
 		    int[] fakeExample = {0,1,0,1,1,1,1,1,1,1,0,1,0,1,0,0,1,1,1,1,1,1,1,0,1,1};
 		    int[] endCode= {0,1,1,1,1,1,1,1,0};
-		    int[] trimmedDecrypted = WaveDecrypter.trim(fakeExample,endCode);
+		    int[] trimmedDecrypted = WaveDecrypter.trim(fakeExample,WaveGenerator.startCode);
 		    System.out.println(Arrays.toString(trimmedDecrypted));
 		    ArrayList<Double> decryptedOut = new ArrayList<Double>();
 		    
