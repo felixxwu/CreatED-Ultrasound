@@ -145,7 +145,6 @@ public class ReadExample
 		return periodicLocations;
 	}
 	// O(n)
-	public static double[] normalise(double[] input) {
 		// worst case for both
 		double max = -1;
 		double min = 1;
@@ -166,7 +165,6 @@ public class ReadExample
 		System.out.println(middle);
 		System.out.println(scale);
 
-		double[] out = new double[input.length];
 		for (int i = 0; i < input.length; i++) {
 			out[i] = (input[i] - middle) / (double) scale;
 		}
@@ -186,7 +184,11 @@ public class ReadExample
 		for (int i = (-1) * sumWindow; i < 0; i++) { sumBefore += input[pos + i]; }
 
 		// summing after
+<<<<<<< HEAD
 		for (int i = 0; i<sumWindow; i++) { sumAfter += input[pos + i]; }
+=======
+		for (int i = 0; i < sumWindow; i++) { sumAfter += input[pos + i]; }
+>>>>>>> 246abc985b7126ff5b35e13c7c95da78086c5639
 
 		// if ratio of after:before is > threshold, return true
 		if (sumAfter / (double) sumBefore > threshold) return true;
@@ -194,3 +196,18 @@ public class ReadExample
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
