@@ -83,9 +83,16 @@ public class ReadExample
 		    
 		    
 		    //TESTTT
-		    //Double[] peakTest = Double[]
+		    Double[] peakTest = new Double[132032];
+		    Arrays.fill(peakTest, 0.0);
+		    for(int p: peaks){
+		    	peakTest[p]=1.0;
+		    }
+		    exportWav(peakTest,"peakTest.wav");
+		    		
 		    //System.out.println(Arrays.toString(peaks));
-			//writes array into txt file
+		    
+//			exports array to txt file
 			BufferedWriter writer = null;
 		    try {
 
