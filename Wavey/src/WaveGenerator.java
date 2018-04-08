@@ -14,7 +14,7 @@ public class WaveGenerator{
             String outputFile = "output.wav";
             int bufferLength = 290;
             double basicFreq = 22430; //22430
-            String url = "hello_world";
+            
 
             // Calculate the number of frames required for specified duration
             long numFrames = (long)(duration * sampleRate);
@@ -23,12 +23,12 @@ public class WaveGenerator{
             WavFile wavFile = WavFile.newWavFile(new File(outputFile), 1, numFrames, 16, sampleRate);
             // Create a buffer of 100 frame s
             double[][] buffer = new double[1][bufferLength];
-<<<<<<< HEAD
+
             String url = "Hi-please-dont-fall-asleep";
-            int[] half = WaveGenerator.encode(url);
-=======
+            
+
             int[] half = Cypher.encode(url);
->>>>>>> d2e2313b462ae8e834c00f9f078f86a350ca50b0
+
             int[] message = new int[half.length*2];
             for (int h = 0; h < half.length; h++) {
                 message[h] = half[h];

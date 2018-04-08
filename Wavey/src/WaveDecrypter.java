@@ -1,6 +1,11 @@
 import java.util.*;
 
 public class WaveDecrypter {
+//	public static void main(String[] args){
+//		Double[] test = {9.0,1.0,9.0,4.0,3.0,5.0};
+//		getClassification(test);
+//		
+//	}
 	static int[] decript(Double[] positiveMono, int[] peaks, int bufferLength) {
 		// contains buffers separately (some of them will correspond to peaks
 		// and others to flats
@@ -21,19 +26,31 @@ public class WaveDecrypter {
 		// Check whether buffers[i] is peak or flat using threshold for the sum
 		// of all intensities of the frames in a buffer
 		Double[] utility = new Double[buffers.length];
-		Double sum = 0.0;
+		Double averageUtility=0.0;
+		System.out.println(averageUtility);
+		System.out.println("hey");
 		for (int b = 0; b < buffers.length; b++) {
+
 			
-			for (Double d : buffers[b]) {
-				sum += d;
-			}
-			
-			utility[b]=analyse(buffers[b]);
+			utility[b]= analyse(buffers[b]); //sum;
+			System.out.println(averageUtility);
+			averageUtility+=utility[b];
+			//ANALYSE IS NOT WORKING WITH NOISY SAMPLES--------------
 		}
-		//System.out.println(sum/buffers.length);
-		//int[] test = {1,1,0};
-		System.out.println(Arrays.toString(utility));
-		return getClassification(utility);
+		//averageUtility=averageUtility/buffers.length;
+		int[] out= new int[utility.length];
+		
+		for(int i = 0; i<out.length;i++){
+			
+			if(utility[i]>averageUtility*1.75){
+				out[i]=1;
+			}else{
+				out[i]=0;
+			}
+		}
+//		System.out.println(averageUtility*1.75);
+		return out;
+		//return getClassification(utility); //ADVANCE CLASSIFICATION NOT WORKING
 	}
 	
 	static int[] getClassification(Double[] utility){
@@ -43,8 +60,8 @@ public class WaveDecrypter {
 		ArrayList<Integer> flat = new ArrayList<Integer>();
 		
 		//adds first utilities as cluster centres
-		beep.add(0);
-		flat.add(1);
+		beep.add(new Integer(520));
+		flat.add(new Integer(10));
 		
 		//average values of utilities in the cluster
 		Double beepCenter=utility[0];
@@ -52,69 +69,99 @@ public class WaveDecrypter {
 		
 		int changes=1;//number of elements that change cluster in each iteration
 		while(changes!=0){ //keeps on looping until there're no changes in a whole iteration.
-		
-		for(int i = 0;i<utility.length;i++){
 			changes=0;
+		for(int i = 0;i<utility.length;i++){
 			Double distanceToBeep=Math.abs(utility[i]-beepCenter);
 			Double distanceToFlat=Math.abs(utility[i]-flatCenter);
 			if(distanceToBeep<distanceToFlat && !beep.contains(i)){
-				//System.out.println(Integer.toString(i)+ "beep");
+				
+				
 				beep.add(i);
-				if(flat.contains(i)){flat.remove(i);}
+				if(flat.contains(i)){flat.remove(new Integer(i));}
 				//calculates center
 				Double sum=0.0;
 				for(int c: beep){
 					sum+=utility[c];
 				}
 				beepCenter=sum/beep.size();
+//				System.out.println(Integer.toString(i)+ "beep");
+//				System.out.println(changes);
 				changes++;
 			}else if(distanceToBeep>=distanceToFlat && !flat.contains(i)){
-				//System.out.println(Integer.toString(i)+ "flat");
+				
 				flat.add(i);
-				if(beep.contains(i)){beep.remove(i);}
+
+				
+				if(beep.contains(i)){beep.remove(new Integer(i));}
 				//calculates center
 				Double sum=0.0;
+				//System.out.println(i);
 				for(int c: flat){
 					sum+=utility[c];
 				}
+				//System.out.println(flat.size());
 				flatCenter=sum/flat.size();
+//				System.out.println(Integer.toString(i)+ "flat");
+//				System.out.println(changes);
 				changes++;
+				
 			}else{
-			//System.out.println(Integer.toString(i)+ "nothing");
+				
+//			System.out.println(Integer.toString(i)+ "nothing");
+//			System.out.println(changes);
 		}
 		}
 			
 		}
+		
 		int[] out = new int[utility.length];
 		Arrays.fill(out, 0);
+		
 		for(Integer b:beep){
-			out[b]=1;
+			if(b<out.length){out[b]=1;}
 		}
+		
 		return out;
 	}
+	
 	static Double analyse(Double[] buffer){
+		
 		int size = buffer.length;
 		Double[] buffer1 = Arrays.copyOfRange(buffer, 0, size/5);
-		Double[] buffer2 = Arrays.copyOfRange(buffer, size/5, 2*size/5);
 		Double[] buffer3 = Arrays.copyOfRange(buffer, 2*size/5, 3*size/5);
-		Double[] buffer4 = Arrays.copyOfRange(buffer, 3*size/5, 4*size/5);
-		Double[] buffer5 = Arrays.copyOfRange(buffer, 4*size/5, size);
-		Double sum1=0.0;Double sum2=0.0;Double sum3=0.0;Double sum4=0.0;Double sum5 = 0.0; 
-		for(int b = 0;b<buffer1.length;b++){
-			sum1+=buffer1[b];
-			sum2+=buffer2[b];
-			sum3+=buffer3[b];
-			sum4+=buffer4[b];
-			sum5+=buffer5[b];
-		}
-		//the higher it is the most likely it is that there's a peak
-		Double utility = sum3-sum1-sum5;
-		//System.out.println(utility);
-		//System.out.println(Double.toString(sum1)+','+ sum2 + ',' + sum3 + ',' + sum4 + ',' + sum5);
+		Double[] buffer4 = Arrays.copyOfRange(buffer, 4*size/5, size);
+		
+		Arrays.sort(buffer3);
+		Arrays.sort(buffer1);
+		Arrays.sort(buffer4);
 		
 		
-		
-		return utility;
+			
+			//adds the 5 top values in buffer3
+			Double max3=0.0;
+			Double max1=0.0;
+			Double max4=0.0;
+	
+			
+			for(int i=buffer3.length-35;i<buffer3.length;i++){
+				max3+=buffer3[i];
+			
+			}
+			for(int i=0;i<buffer1.length-20;i++){
+				max1+=buffer1[i];
+			
+			}
+			for(int i=0;i<buffer4.length-20;i++){
+				max4+=buffer4[i];
+			
+			}
+			
+//			System.out.println(max3); //sum of 10 max vals in max3
+//			System.out.println(max1+max4); //sum of 5 peaks in max1 + sum of 5 peaks in max4
+//			System.out.println("\n");
+			
+
+		return max3/((max1+max4)/70);
 	}
 
 	static int[] trim(int[] message, int[] startCode) {

@@ -8,7 +8,7 @@ public class ReadExample {
 
 		try {	
 			// Open the wav file specified as the first argument
-			WavFile wavFile = WavFile.openWavFile(new File("pablo.wav"));
+			WavFile wavFile = WavFile.openWavFile(new File("felix1.wav"));
             int bufferLength = 290;
 
 			Double[] monoFrames = readToMonoDouble(wavFile);
@@ -43,9 +43,12 @@ public class ReadExample {
 		    		
 		    //DECRIPTS ARRAY
 		    //TRY WITH positiveMono and neighbourDifference
+		    
 		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames, peaks, bufferLength);
 		    
+		    System.out.println(Arrays.toString(decrypted));
 		    int[] trimmedDecrypted = WaveDecrypter.trim(decrypted,Cypher.startCode);
+		    System.out.println("aqui");
 		    String answer = Cypher.decode(trimmedDecrypted);
 		    System.out.println(answer);
 		    ArrayList<Double> decryptedOut = new ArrayList<Double>();
