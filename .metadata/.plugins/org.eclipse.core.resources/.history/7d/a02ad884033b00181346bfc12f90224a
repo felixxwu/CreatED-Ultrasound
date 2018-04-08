@@ -1,37 +1,38 @@
 import java.io.*;
 import java.util.*;
 
-public class ReadExample {
-
+public class ReadExample
+{
 	static long sampleRate;
-	public static void main(String[] args) {
-
-		try {	
+	public static void main(String[] args)
+	{
+		try
+		{	
+			
 			// Open the wav file specified as the first argument
 			WavFile wavFile = WavFile.openWavFile(new File("pablo.wav"));
-            int bufferLength = 290;
+
 
 			Double[] monoFrames = readToMonoDouble(wavFile);
-
 			Double[] positiveMonoFrames = new Double[monoFrames.length];
-
-			for (int i = 0; i < monoFrames.length; i++){ positiveMonoFrames[i] = Math.abs(monoFrames[i]); }
+			for (int i = 0; i < monoFrames.length; i++){
+				positiveMonoFrames[i] = Math.abs(monoFrames[i]);
+			}
 			
 			//neighbourDifference encodes difference in intensity between frame and neighbour
 			Double[] neighbourDifference = new Double[monoFrames.length];
-			for (int i = 0;i < monoFrames.length - 1; i++) {
+			for(int i = 0;i < monoFrames.length - 1; i++){
 				neighbourDifference[i] = Math.abs(monoFrames[i] - monoFrames[i+1]);
 			}
 			//last element doesn't have a right neighbour
 			neighbourDifference[neighbourDifference.length - 1] = 0.0;
 			
+			
 			exportWav(neighbourDifference, "neighbor.wav", sampleRate);
 			exportWav(monoFrames,"mono.wav", sampleRate);
 			exportWav(positiveMonoFrames,"positiveMono.wav", sampleRate);
-
-
 			//calculates peaks
-		    int[] peaks = periodicPeaks(neighbourDifference, bufferLength);
+		    int[] peaks = periodicPeaks(neighbourDifference,290);
 		    //allows visualization of periodicPeaks
 		    Double[] peakVisualizer = new Double[neighbourDifference.length];
 		    peakVisualizer[0]=1.0;
@@ -43,20 +44,22 @@ public class ReadExample {
 		    		
 		    //DECRIPTS ARRAY
 		    //TRY WITH positiveMono and neighbourDifference
-		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks, bufferLength);
+		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks,290);
 		    
 		    int[] trimmedDecrypted = WaveDecrypter.trim(decrypted,Cypher.startCode);
 		    String answer = Cypher.decode(trimmedDecrypted);
 		    System.out.println(answer);
 		    ArrayList<Double> decryptedOut = new ArrayList<Double>();
 		    
+		                           
 		    //print decrypted array to wave (hi-lo )
-		    Double[] decryptedBuffer = new Double[bufferLength];
+		    Double[] decryptedBuffer = new Double[290];
 		    for (int d: decrypted){
-		    	if (d == 1){
+		    	if(d==1){
+		    		
 		    		Arrays.fill(decryptedBuffer, 0.0);
-		    	} else {
-		    		Arrays.fill(decryptedBuffer, 1.0);
+		    	}else{
+		    		Arrays.fill(decryptedBuffer,1.0 );
 		    	}
 		    	decryptedOut.addAll(Arrays.asList(decryptedBuffer));
 		    }
@@ -97,7 +100,7 @@ public class ReadExample {
 		}
 	}
 	
-    public static Double[] readToMonoDouble(WavFile wavFile) throws IOException, WavFileException {
+    public static Double[] readToMonoDouble(WavFile wavFile) {
 
         sampleRate = wavFile.getSampleRate();
         // Display information about the wav file
@@ -210,7 +213,9 @@ public class ReadExample {
 	}
 
 	public static void exportWav(Double[] input, String file, long sampleRate) {
-	      try {
+	      try
+	      {
+				
 				double duration = input.length / (double) sampleRate;
 				long numFrames = (long)(duration * sampleRate);
 				WavFile wavFile = WavFile.newWavFile(new File(file), 1, numFrames, 16, sampleRate);
