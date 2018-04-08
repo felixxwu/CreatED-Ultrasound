@@ -1,8 +1,12 @@
 import java.io.*;
 import java.util.*;
+<<<<<<< HEAD
+//git test
+=======
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+>>>>>>> c0bed17bf119a6bc80cb9c63ca4cbe05bfe1cb5d
 public class ReadExample
 {
 	public static void main(String[] args)
