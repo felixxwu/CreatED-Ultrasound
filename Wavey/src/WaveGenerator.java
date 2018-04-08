@@ -14,7 +14,7 @@ public class WaveGenerator
 
          // Create a wav file with the name specified as the first argument
          WavFile wavFile = WavFile.newWavFile(new File(args[0]), 1, numFrames, 16, sampleRate);
-         int bufferLength = 300;
+         int bufferLength = 290;
          // Create a buffer of 100 frame s
          double[][] buffer = new double[1][bufferLength];
          int[] message = {0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,
@@ -22,7 +22,7 @@ public class WaveGenerator
         		 		  0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
          // Initialise a local frame counter
          long frameCounter = 0;
-         double basicFreq=21100;
+         double basicFreq=22430; //22430
          double smoother =0;
          int alternating = 0;
          for(int m :message){
@@ -44,10 +44,10 @@ public class WaveGenerator
 //        			 	if(alternating==0){alternating=1;}else{alternating=0;}
                  		buffer[0][s] = Math.sin(2.0 * Math.PI * basicFreq * frameCounter / sampleRate)* smoother;
                  		 if(s<smootherInterval && smoother<1){
-                 			 smoother=Math.pow(s/smootherInterval,1.3);;
+                 			 smoother=Math.pow(s/smootherInterval,3.5);;
                  			 }
                  		 if(s>toWrite-smootherInterval){
-                 			 smoother=Math.pow((toWrite-s)/smootherInterval,1.3);
+                 			 smoother=Math.pow((toWrite-s)/smootherInterval,3.5);
                  					 System.out.println(smoother);
                  			 }
                  }

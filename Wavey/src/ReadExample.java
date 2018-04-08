@@ -47,16 +47,14 @@ public class ReadExample
 				//System.out.println(Arrays.toString(buffer));
 				for(double b: buffer){
 					if(turn==0){
-					framesA.add(new Double(Math.abs(b)));
+					framesA.add(new Double(b));
 					turn=1;
 					}else{
-						framesB.add(new Double(Math.abs(b)));
+						framesB.add(new Double(b));
 						turn=0;
 					}
 				}
-				
-				
-	
+
 			}
 			while (framesRead != 0);
 			
@@ -69,8 +67,19 @@ public class ReadExample
 			for(int i = 0; i<arrayA.length;i++){
 				monoFrames[i]=(arrayA[i]+arrayB[i])/2.0; //average of both channels
 			}
-			//print array
-		
+			
+			//neighbourDifference encoding difference in intensity between frame and neighbour
+			Double[] neighbourDifference = new Double[monoFrames.length];
+			for(int i =0;i<monoFrames.length-1;i++){
+				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1]);
+			}
+			//last element doesn't have a right neighbour
+			neighbourDifference[neighbourDifference.length-1]=0.0;
+
+			
+		    int[] peaks = periodicPeaks(neighbourDifference,290,132032);
+		    System.out.println(Arrays.toString(peaks));
+			//writes array into txt file
 			BufferedWriter writer = null;
 		    try {
 
@@ -103,7 +112,38 @@ public class ReadExample
 			System.err.println(e);
 		}
 	}
-
+	
+	
+	
+	//returns int[] corresponding to neighbourDiffrence's potential periodic peaks 
+	//doesnt verify if they are picks or not.
+	public static int[] periodicPeaks(Double[] nDifference,int bufferLength,int frames){
+		//potentialPeaks[i] stores the sum of the intensity of nDifferences which indeces are n*i
+		Double[] potentialPeaks=new Double[bufferLength];
+		for(int p=0;p<bufferLength;p++){
+			Double sum=0.0;
+			for(int n = 0;n<nDifference.length;n=n+bufferLength){
+				sum+=nDifference[n];
+			}
+			potentialPeaks[p]=sum;
+		}
+		//look for index corresponding to max sum
+		int maxIndex=0;
+		Double maxValue= Double.MIN_VALUE;
+		for(int p=0;p<potentialPeaks.length;p++){
+			if(potentialPeaks[p]>maxValue){
+				maxValue=potentialPeaks[p];
+				maxIndex=p;
+			}
+		}
+		int[] periodicLocations = new int[(frames/bufferLength)+1];
+		int currentLocationIndex=0;
+		for(int p=maxIndex;p<nDifference.length;p=p+bufferLength){
+			periodicLocations[currentLocationIndex]=p;
+			currentLocationIndex++;
+		}
+		return periodicLocations;
+	}
 	// O(n)
 	public static double[] normalise(double[] input) {
 		// worst case for both
@@ -135,7 +175,7 @@ public class ReadExample
 	}
 
 	// input must be absolute !!!
-	public static bool isPeak(double[] input, int pos) {
+	public static boolean isPeak(double[] input, int pos) {
 		int sumWindow = 30;
 		double threshold = 3;	// returns true if sumAfter is "threshold" times more than sumBefore
 		if (pos < sumWindow) return false;	// discard peaks at the start (avoid negative index)
@@ -146,7 +186,7 @@ public class ReadExample
 		for (int i = (-1) * sumWindow; i < 0; i++) { sumBefore += input[pos + i]; }
 
 		// summing after
-		for (int i = 0; sumWindow; i++) { sumAfter += input[pos + i]; }
+		for (int i = 0; i<sumWindow; i++) { sumAfter += input[pos + i]; }
 
 		// if ratio of after:before is > threshold, return true
 		if (sumAfter / (double) sumBefore > threshold) return true;
