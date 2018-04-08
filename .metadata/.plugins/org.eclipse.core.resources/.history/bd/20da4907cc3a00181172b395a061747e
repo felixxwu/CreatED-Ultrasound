@@ -149,7 +149,6 @@ public class ReadExample
 		}
 		return periodicLocations;
 	}
-	
 	// O(n)
 	public static Double[] normalise(Double[] input) {
 		// worst case for both

@@ -149,7 +149,6 @@ public class ReadExample
 		}
 		return periodicLocations;
 	}
-	
 	// O(n)
 	public static Double[] normalise(Double[] input) {
 		// worst case for both
@@ -179,8 +178,7 @@ public class ReadExample
 
 		return out;
 	}
-	
-	// -- not in use yet
+
 	// input must be absolute !!!
 	public static boolean isPeak(double[] input, int pos) {
 		int sumWindow = 30;

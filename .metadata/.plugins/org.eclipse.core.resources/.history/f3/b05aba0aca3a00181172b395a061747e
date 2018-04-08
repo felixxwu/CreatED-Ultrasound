@@ -89,16 +89,16 @@ public class ReadExample
 		        writer = new BufferedWriter(new FileWriter("array.txt"));
 		        for ( int i = 0; i < monoFrames.length; i++)
 		        {      
-		            writer.write(String.valueOf(monoFrames[i]));
-		            writer.newLine();
-		            writer.flush();
+		          writer.write(String.valueOf(monoFrames[i]));
+		          writer.newLine();
+		      writer.flush();
 		        }
 
 		    } catch(IOException ex) {
 		        ex.printStackTrace();
 		    } finally{
 		        if(writer!=null){
-		        	writer.close();
+		            writer.close();
 		        }  
 		    }
 		    
@@ -149,7 +149,6 @@ public class ReadExample
 		}
 		return periodicLocations;
 	}
-	
 	// O(n)
 	public static Double[] normalise(Double[] input) {
 		// worst case for both
@@ -179,8 +178,7 @@ public class ReadExample
 
 		return out;
 	}
-	
-	// -- not in use yet
+
 	// input must be absolute !!!
 	public static boolean isPeak(double[] input, int pos) {
 		int sumWindow = 30;
