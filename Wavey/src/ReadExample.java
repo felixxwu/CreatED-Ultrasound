@@ -43,7 +43,7 @@ public class ReadExample {
 		    		
 		    //DECRIPTS ARRAY
 		    //TRY WITH positiveMono and neighbourDifference
-		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks, bufferLength);
+		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames, peaks, bufferLength);
 		    
 		    int[] trimmedDecrypted = WaveDecrypter.trim(decrypted,Cypher.startCode);
 		    String answer = Cypher.decode(trimmedDecrypted);
