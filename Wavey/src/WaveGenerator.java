@@ -24,33 +24,33 @@ public class WaveGenerator{
             int alternating = 0;
             for(int m :message){
 
-            long remaining = wavFile.getFramesRemaining();
-            int toWrite = (remaining > bufferLength) ? bufferLength : (int) remaining;
-            if(m==0){
-                for (int s=0 ; s<toWrite ; s++, frameCounter++)
-                { 
-                   buffer[0][s] = 0;
-                   smoother=0;
-                }
+                long remaining = wavFile.getFramesRemaining();
+                int toWrite = (remaining > bufferLength) ? bufferLength : (int) remaining;
+                if(m==0){
+                    for (int s=0 ; s<toWrite ; s++, frameCounter++)
+                    { 
+                     buffer[0][s] = 0;
+                     smoother=0;
+                 }
 
-           }else{
-               for (int s=0 ; s<toWrite ; s++, frameCounter++)
-               { 
-                 double smootherInterval = toWrite/2;
+             }else{
+                 for (int s=0 ; s<toWrite ; s++, frameCounter++)
+                 { 
+                   double smootherInterval = toWrite/2;
 //        			 	buffer[0][s]=alternating*smoother;
 //        			 	if(alternating==0){alternating=1;}else{alternating=0;}
-                 buffer[0][s] = Math.sin(2.0 * Math.PI * basicFreq * frameCounter / sampleRate)* smoother;
-                 if(s<smootherInterval && smoother<1){
-                     smoother=Math.pow(s/smootherInterval,3.5);;
-                 }
-                 if(s>toWrite-smootherInterval){
-                     smoother=Math.pow((toWrite-s)/smootherInterval,3.5);
-                     System.out.println(smoother);
-                 }
-             }
-         }
-         wavFile.writeFrames(buffer, toWrite);
-     }
+                   buffer[0][s] = Math.sin(2.0 * Math.PI * basicFreq * frameCounter / sampleRate)* smoother;
+                   if(s<smootherInterval && smoother<1){
+                       smoother=Math.pow(s/smootherInterval,3.5);;
+                   }
+                   if(s>toWrite-smootherInterval){
+                       smoother=Math.pow((toWrite-s)/smootherInterval,3.5);
+                       System.out.println(smoother);
+                   }
+               }
+           }
+           wavFile.writeFrames(buffer, toWrite);
+       }
 
          // Loop until all frames written
 //         while (frameCounter < numFr ames)
@@ -72,19 +72,21 @@ public class WaveGenerator{
 //         }
 
          // Close the wavFile
-     wavFile.close();
- }
- catch (Exception e)
- {
-     System.err.println(e);
- }
+       wavFile.close();
+   }
+   catch (Exception e)
+   {
+       System.err.println(e);
+   }
 }
 
 private static int bits = 7;
 
 public static String charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~!*'();:@&=+$,/?#[]";
 
-public static int[][] codeList = {
+public static int[] startCode = {0,1,1,1,1,1,1,1,0};
+
+public static int[][] codeList = { 
       {0,0,0,1,0,0,1},	//A
       {0,0,0,1,0,1,0},	//B
       {0,0,0,1,0,1,1},	//C
@@ -171,14 +173,14 @@ public static int[][] codeList = {
       {1,1,1,0,1,0,1}	//]
   };
 
-public static int[] charToCode(char c) {
+  public static int[] charToCode(char c) {
     for (int i = 0; i < charList.length(); i++) {
         if (charList.charAt(i) == c) {
 				// return code
             int[] code = new int[bits];
             for (int j = 0; j < bits; j++) {
-            code[j] = codeList[i][j];
-        }
+                code[j] = codeList[i][j];
+            }
             return code;
         }
     }
@@ -200,6 +202,39 @@ public static char codeToChar(int[] code) {
         }
     }
     return '%';
+}
+
+public static int[] encode(String message) {
+    int[] out = new int[bits * message.length() + startCode.length];
+    for (int i = 0; i < startCode.length; i++) {
+        out[i] = startCode[i];
+    }
+    // for each message char
+    for (int i = 0; i < message.length(); i++) {
+        // for each bit in the code
+        int[] code = charToCode(message.charAt(i));
+        for (int j = 0; j < bits; j++) {
+            // startcode length because it starts after an ofset
+            // * bits because its every 7 bits
+            // + j for current 7 bits (this loop)
+            out[startCode.length + (i)*bits + j] = code[j];
+        }
+    }
+    return out;
+}
+
+// assumes perfect code (properly aligned)
+public static String decode(int[] code) {
+    String out = "";
+    int numCodes = code.length / bits;
+    for (int i = 0; i < numCodes; i++) {
+        int[] curCode = new int[bits];
+        for (int j = 0; j < bits; j++) {
+            curCode[j] = code[(i * bits) + j];
+        }
+        out += codeToChar(curCode);
+    }
+    return out;
 }
 
 
@@ -236,10 +271,10 @@ public static int charIndex(char c) {
     String charList = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~!*'();:@&=+$,/?#[]";
     for (int i = 0; i < charList.length(); i++) {
         if (charList.charAt(i) == c) {
-         return i;
-     }
- }
- return -1;
+           return i;
+       }
+   }
+   return -1;
 }
 
 //   public static int[] 
