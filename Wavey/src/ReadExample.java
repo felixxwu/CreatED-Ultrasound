@@ -14,6 +14,7 @@ public class ReadExample
 
 			// Display information about the wav file
 			wavFile.display();
+			
 
 			// Get the number of audio channels in the wav file
 			int numChannels = wavFile.getNumChannels();
