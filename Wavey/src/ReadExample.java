@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 
 public class ReadExample
 {
@@ -10,7 +11,7 @@ public class ReadExample
 		try
 		{
 			// Open the wav file specified as the first argument
-			WavFile wavFile = WavFile.openWavFile(new File("felix3.wav"));
+			WavFile wavFile = WavFile.openWavFile(new File("felix1.wav"));
 
 			// Display information about the wav file
 			wavFile.display();
@@ -72,18 +73,19 @@ public class ReadExample
 			//neighbourDifference encoding difference in intensity between frame and neighbour
 			Double[] neighbourDifference = new Double[monoFrames.length];
 			for(int i =0;i<monoFrames.length-1;i++){
-				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1])-1.0;
+				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1]);
 			}
 			//last element doesn't have a right neighbour
 			neighbourDifference[neighbourDifference.length-1]=0.0;
 			exportWav(neighbourDifference, "neighbor.wav");
-			
-		    int[] peaks = periodicPeaks(neighbourDifference,290,132032);
-		    
+			exportWav(monoFrames,"mono.wav");
+		    int[] peaks = periodicPeaks(neighbourDifference,290);
+		    System.out.println(Arrays.toString(peaks));
 		    
 		    
 		    //TESTTT
-		    Double[] peakTest = new Double[132032];
+		    Double[] peakTest = new Double[neighbourDifference.length];
+		    peakTest[0]=1.0;
 		    Arrays.fill(peakTest, 0.0);
 		    for(int p: peaks){
 		    	peakTest[p]=1.0;
@@ -133,16 +135,27 @@ public class ReadExample
 	
 	//returns int[] corresponding to neighbourDiffrence's potential periodic peaks 
 	//doesnt verify if they are picks or not.
-	public static int[] periodicPeaks(Double[] nDifference,int bufferLength,int frames){
+	public static int[] periodicPeaks(Double[] nDifference,int bufferLength){
 		//potentialPeaks[i] stores the sum of the intensity of nDifferences which indeces are n*i
 		Double[] potentialPeaks=new Double[bufferLength];
 		for(int p=0;p<bufferLength;p++){
 			Double sum=0.0;
-			for(int n = 0;n<nDifference.length;n=n+bufferLength){
-				sum+=nDifference[n];
-			}
+			for(int n = p+4;n<nDifference.length-5;n=n+bufferLength){
+				Double[] maxPeaks=Arrays.copyOfRange(nDifference, n-4, n+5);
+					Double max = maxPeaks[0]; //gets the max value of the window of values
+					for(Double m: maxPeaks){
+						if(m>max){max=m;}
+					}
+						
+					sum+=max;
+				}
+				
+				
 			potentialPeaks[p]=sum;
-		}
+			}
+		
+		
+		//the max index of potentialPeaks correspond to the offset in period that the peak is at.
 		//look for index corresponding to max sum
 		int maxIndex=0;
 		Double maxValue= Double.MIN_VALUE;
@@ -152,7 +165,8 @@ public class ReadExample
 				maxIndex=p;
 			}
 		}
-		int[] periodicLocations = new int[(frames/bufferLength)+1];
+		//calculates the actual locations of the peaks
+		int[] periodicLocations = new int[(nDifference.length/bufferLength)+1];
 		int currentLocationIndex=0;
 		for(int p=maxIndex;p<nDifference.length;p=p+bufferLength){
 			periodicLocations[currentLocationIndex]=p;
