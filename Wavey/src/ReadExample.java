@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
 //git test
 public class ReadExample
 {
@@ -14,6 +12,7 @@ public class ReadExample
 
 			// Display information about the wav file
 			wavFile.display();
+			
 
 			// Get the number of audio channels in the wav file
 			int numChannels = wavFile.getNumChannels();
@@ -96,6 +95,9 @@ public class ReadExample
 			// Output the minimum and maximum value
 			
 			System.out.printf("Min: %f, Max: %f\n", min, max);
+			
+
+			exportWav(monoFrames, "test.wav");
 		}
 		catch (Exception e)
 		{
@@ -104,7 +106,7 @@ public class ReadExample
 	}
 
 	// O(n)
-	public static double[] normalise(double[] input) {
+	public static Double[] normalise(Double[] input) {
 		// worst case for both
 		double max = -1;
 		double min = 1;
@@ -125,7 +127,7 @@ public class ReadExample
 		System.out.println(middle);
 		System.out.println(scale);
 
-		double[] out = new double[input.length];
+		Double[] out = new Double[input.length];
 		for (int i = 0; i < input.length; i++) {
 			out[i] = (input[i] - middle) / (double) scale;
 		}
@@ -134,7 +136,7 @@ public class ReadExample
 	}
 
 	// input must be absolute !!!
-	public static bool isPeak(double[] input, int pos) {
+	public static boolean isPeak(double[] input, int pos) {
 		int sumWindow = 30;
 		double threshold = 3;	// returns true if sumAfter is "threshold" times more than sumBefore
 		if (pos < sumWindow) return false;	// discard peaks at the start (avoid negative index)
@@ -145,11 +147,48 @@ public class ReadExample
 		for (int i = (-1) * sumWindow; i < 0; i++) { sumBefore += input[pos + i]; }
 
 		// summing after
-		for (int i = 0; sumWindow; i++) { sumAfter += input[pos + i]; }
+		for (int i = 0; i < sumWindow; i++) { sumAfter += input[pos + i]; }
 
 		// if ratio of after:before is > threshold, return true
 		if (sumAfter / (double) sumBefore > threshold) return true;
 		return false;
 
 	}
+
+	public static void exportWav(Double[] input, String file) {
+	      try
+	      {
+				int sampleRate = 44100;
+				double duration = input.length / (double) sampleRate;
+				long numFrames = (long)(duration * sampleRate);
+				WavFile wavFile = WavFile.newWavFile(new File(file), 1, numFrames, 16, sampleRate);
+				double[][] buffer = new double[2][1];
+				for (int i = 0; i < numFrames; i++) {
+					buffer[0][0] = input[i];
+					buffer[1][0] = input[i];
+					wavFile.writeFrames(buffer, 1);
+				}
+	 
+			    wavFile.close();
+		  }
+		  catch (Exception e)
+		  {
+		     System.err.println(e);
+		  }
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
