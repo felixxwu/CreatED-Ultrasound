@@ -10,7 +10,7 @@ public class ReadExample
 		try
 		{
 			// Open the wav file specified as the first argument
-			WavFile wavFile = WavFile.openWavFile(new File("felix3.wav"));
+			WavFile wavFile = WavFile.openWavFile(new File(args[0]));
 
 			// Display information about the wav file
 			wavFile.display();
@@ -209,7 +209,7 @@ public class ReadExample
 	public static void exportWav(Double[] input, String file) {
 	      try
 	      {
-				int sampleRate = 44100;
+				int sampleRate = 48000;
 				double duration = input.length / (double) sampleRate;
 				long numFrames = (long)(duration * sampleRate);
 				WavFile wavFile = WavFile.newWavFile(new File(file), 1, numFrames, 16, sampleRate);

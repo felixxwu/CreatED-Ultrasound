@@ -209,7 +209,7 @@ public class ReadExample
 	public static void exportWav(Double[] input, String file) {
 	      try
 	      {
-				int sampleRate = 44100;
+				int sampleRate = 48000;
 				double duration = input.length / (double) sampleRate;
 				long numFrames = (long)(duration * sampleRate);
 				WavFile wavFile = WavFile.newWavFile(new File(file), 1, numFrames, 16, sampleRate);
