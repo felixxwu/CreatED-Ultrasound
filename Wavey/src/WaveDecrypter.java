@@ -27,7 +27,7 @@ public class WaveDecrypter {
 			for (Double d : buffers[b]) {
 				sum += d;
 			}
-			// System.out.println(sum);
+			System.out.println(sum);
 
 			if (sum > 10) {
 				isPeak[b] = 1;

@@ -1,7 +1,8 @@
+
+import java.util.*;
 import java.io.*;
 import javax.sound.sampled.*;
 import java.awt.Desktop;
-
 public class WaveGenerator{
     public static void main(String[] args)
     {
@@ -18,7 +19,13 @@ public class WaveGenerator{
             int bufferLength = 290;
             // Create a buffer of 100 frame s
             double[][] buffer = new double[1][bufferLength];
-            int[] message = {0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
+            String url = "";
+            int[] half = WaveGenerator.encode(url);
+            int[] message = new int[half.length*2];
+            for(int h =0;h<half.length;h++){
+            	message[h]=half[h];
+            	message[h+half.length]=half[h];
+            }
             // Initialise a local frame counter
             long frameCounter = 0;
             double basicFreq=22430; //22430
