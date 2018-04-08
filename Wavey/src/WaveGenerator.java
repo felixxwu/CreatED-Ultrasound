@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-import java.io.File;
+
 import java.util.*;
-=======
 import java.io.*;
 import javax.sound.sampled.*;
 import java.awt.Desktop;
->>>>>>> bf555b7f41083b33f9e9089eedd9addd284d35d8
-
 public class WaveGenerator{
     public static void main(String[] args)
     {
@@ -23,7 +19,7 @@ public class WaveGenerator{
             int bufferLength = 290;
             // Create a buffer of 100 frame s
             double[][] buffer = new double[1][bufferLength];
-            String url = "Hi_Felix_and_Pablo_are_the_gods_of_the_universe";
+            String url = "";
             int[] half = WaveGenerator.encode(url);
             int[] message = new int[half.length*2];
             for(int h =0;h<half.length;h++){
