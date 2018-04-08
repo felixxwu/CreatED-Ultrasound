@@ -72,22 +72,27 @@ public class ReadExample
 			//neighbourDifference encoding difference in intensity between frame and neighbour
 			Double[] neighbourDifference = new Double[monoFrames.length];
 			for(int i =0;i<monoFrames.length-1;i++){
-				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1]);
+				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1])-1.0;
 			}
 			//last element doesn't have a right neighbour
 			neighbourDifference[neighbourDifference.length-1]=0.0;
-
+			//System.out.println(Arrays.toString(neighbourDifference));
 			
 		    int[] peaks = periodicPeaks(neighbourDifference,290,132032);
-		    System.out.println(Arrays.toString(peaks));
+		    
+		    
+		    
+		    //TESTTT
+		    //Double[] peakTest = Double[]
+		    //System.out.println(Arrays.toString(peaks));
 			//writes array into txt file
 			BufferedWriter writer = null;
 		    try {
 
 		        writer = new BufferedWriter(new FileWriter("array.txt"));
-		        for ( int i = 0; i < monoFrames.length; i++)
+		        for ( int i = 0; i < neighbourDifference.length; i++)
 		        {      
-		          writer.write(String.valueOf(monoFrames[i]));
+		          writer.write(String.valueOf(neighbourDifference[i]));
 		          writer.newLine();
 		      writer.flush();
 		        }
@@ -109,7 +114,7 @@ public class ReadExample
 			System.out.printf("Min: %f, Max: %f\n", min, max);
 			
 
-			exportWav(monoFrames, "test.wav");
+			//exportWav(peaks, "peaks.wav");
 		}
 		catch (Exception e)
 		{
@@ -202,7 +207,7 @@ public class ReadExample
 	public static void exportWav(Double[] input, String file) {
 	      try
 	      {
-				int sampleRate = 44100;
+				int sampleRate = 48000;
 				double duration = input.length / (double) sampleRate;
 				long numFrames = (long)(duration * sampleRate);
 				WavFile wavFile = WavFile.newWavFile(new File(file), 1, numFrames, 16, sampleRate);
