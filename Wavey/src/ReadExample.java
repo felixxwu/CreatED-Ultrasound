@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class ReadExample
 {
@@ -13,7 +11,7 @@ public class ReadExample
 			
 			
 			// Open the wav file specified as the first argument
-			WavFile wavFile = WavFile.openWavFile(new File("felix3.wav"));
+			WavFile wavFile = WavFile.openWavFile(new File("felix1.wav"));
 
 			// Display information about the wav file
 			wavFile.display();
@@ -62,52 +60,81 @@ public class ReadExample
 			}
 			while (framesRead != 0);
 			
-			
+			//CREATES ARRAYS ENCONDING WAVE.
 			Double[] arrayA = framesA.toArray(new Double[framesA.size()]);
 			Double[] arrayB = framesB.toArray(new Double[framesB.size()]);
 			
 			//monoFrames: mono version of wav
 			Double[] monoFrames = new Double[arrayA.length];
+			Double[] positiveMonoFrames = new Double[monoFrames.length];
 			for(int i = 0; i<arrayA.length;i++){
 				monoFrames[i]=(arrayA[i]+arrayB[i])/2.0; //average of both channels
+				positiveMonoFrames[i]=Math.abs(arrayA[i]+arrayB[i])/2;
 			}
 			
-			//neighbourDifference encoding difference in intensity between frame and neighbour
+			//neighbourDifference encodes difference in intensity between frame and neighbour
 			Double[] neighbourDifference = new Double[monoFrames.length];
 			for(int i =0;i<monoFrames.length-1;i++){
-				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1])-1.0;
+				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1]);
 			}
 			//last element doesn't have a right neighbour
 			neighbourDifference[neighbourDifference.length-1]=0.0;
-			exportWav(neighbourDifference, "neighbor.wav");
 			
-		    int[] peaks = periodicPeaks(neighbourDifference,290,132032);
-		    
-		    
-		    exportWav(smoothOut(monoFrames,10), "smooth.wav");
-		    
-		    
-		    
-		    //TESTTT
-		    Double[] peakTest = new Double[132032];
-		    Arrays.fill(peakTest, 0.0);
+			
+			exportWav(neighbourDifference, "neighbor.wav");
+			exportWav(monoFrames,"mono.wav");
+			exportWav(positiveMonoFrames,"positiveMono.wav");
+			//calculates peaks
+		    int[] peaks = periodicPeaks(neighbourDifference,290);
+		    //allows visualization of periodicPeaks
+		    Double[] peakVisualizer = new Double[neighbourDifference.length];
+		    peakVisualizer[0]=1.0;
+		    Arrays.fill(peakVisualizer, 0.0);
 		    for(int p: peaks){
-		    	peakTest[p]=1.0;
+		    	peakVisualizer[p]=1.0;
 		    }
-//		    exportWav(peakTest,"peakTest.wav");
+		    exportWav(peakVisualizer,"peakVisualizer.wav");
 		    		
-		    //System.out.println(Arrays.toString(peaks));
+		    //DECRIPTS ARRAY
+		    //TRY WITH positiveMono and neighbourDifference
+		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks,290);
+		    ArrayList<Double> decryptedOut = new ArrayList<Double>();
+		    int[] originalMessage= {0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
+		    int[] decryptedMessage={0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
+		    System.out.println(originalMessage.length);
+		    
+		                           
+		    //print decrypted array to wave (hi-lo )
+		    Double[] decryptedBuffer = new Double[290];
+		    for(int d: decrypted){
+		    	if(d==1){
+		    		
+		    		Arrays.fill(decryptedBuffer, 0.0);
+		    	}else{
+		    		Arrays.fill(decryptedBuffer,1.0 );
+		    	}
+		    	decryptedOut.addAll(Arrays.asList(decryptedBuffer));
+		    }
+		    decryptedOut.addAll(Arrays.asList(decryptedBuffer));
+	    	Double[] decryptedArray = new Double[decryptedOut.size()];
+	    	decryptedOut.toArray(decryptedArray);
+		    exportWav(decryptedArray,"decrypted.wav");
+		    
+		    
+		    
+		    
+		    System.out.println(Arrays.toString(decrypted));
 		    
 //			exports array to txt file
 			BufferedWriter writer = null;
 		    try {
 
-		        writer = new BufferedWriter(new FileWriter("array.txt"));
-		        for ( int i = 0; i < neighbourDifference.length; i++)
+		        writer = new BufferedWriter(new FileWriter("decrypted.txt"));
+		        for ( int i = 0; i < decrypted.length; i++)
 		        {
-		            writer.write(String.valueOf(monoFrames[i]));
-		            writer.newLine();
-		            writer.flush();
+		            writer.write(String.valueOf(decrypted[i]));
+		            writer.write(",");
+		            //writer.flush();
 		        }
 
 		    } catch(IOException ex) {
@@ -139,16 +166,27 @@ public class ReadExample
 	
 	//returns int[] corresponding to neighbourDiffrence's potential periodic peaks 
 	//doesnt verify if they are picks or not.
-	public static int[] periodicPeaks(Double[] nDifference,int bufferLength,int frames){
+	public static int[] periodicPeaks(Double[] nDifference,int bufferLength){
 		//potentialPeaks[i] stores the sum of the intensity of nDifferences which indeces are n*i
 		Double[] potentialPeaks=new Double[bufferLength];
 		for(int p=0;p<bufferLength;p++){
 			Double sum=0.0;
-			for(int n = 0;n<nDifference.length;n=n+bufferLength){
-				sum+=nDifference[n];
-			}
+			for(int n = p+4;n<nDifference.length-5;n=n+bufferLength){
+				Double[] maxPeaks=Arrays.copyOfRange(nDifference, n-4, n+5);
+					Double max = maxPeaks[0]; //gets the max value of the window of values
+					for(Double m: maxPeaks){
+						if(m>max){max=m;}
+					}
+						
+					sum+=max;
+				}
+				
+				
 			potentialPeaks[p]=sum;
-		}
+			}
+		
+		
+		//the max index of potentialPeaks correspond to the offset in period that the peak is at.
 		//look for index corresponding to max sum
 		int maxIndex=0;
 		Double maxValue= Double.MIN_VALUE;
@@ -158,7 +196,8 @@ public class ReadExample
 				maxIndex=p;
 			}
 		}
-		int[] periodicLocations = new int[(frames/bufferLength)+1];
+		//calculates the actual locations of the peaks
+		int[] periodicLocations = new int[(nDifference.length/bufferLength)+1];
 		int currentLocationIndex=0;
 		for(int p=maxIndex;p<nDifference.length;p=p+bufferLength){
 			periodicLocations[currentLocationIndex]=p;
