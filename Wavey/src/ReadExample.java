@@ -1,8 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collections;
 
 public class ReadExample
 {
@@ -60,50 +57,82 @@ public class ReadExample
 			}
 			while (framesRead != 0);
 			
-			
+			//CREATES ARRAYS ENCONDING WAVE.
 			Double[] arrayA = framesA.toArray(new Double[framesA.size()]);
 			Double[] arrayB = framesB.toArray(new Double[framesB.size()]);
 			
 			//monoFrames: mono version of wav
 			Double[] monoFrames = new Double[arrayA.length];
+			Double[] positiveMonoFrames = new Double[monoFrames.length];
 			for(int i = 0; i<arrayA.length;i++){
 				monoFrames[i]=(arrayA[i]+arrayB[i])/2.0; //average of both channels
+				positiveMonoFrames[i]=Math.abs(arrayA[i]+arrayB[i])/2;
 			}
 			
-			//neighbourDifference encoding difference in intensity between frame and neighbour
+			//neighbourDifference encodes difference in intensity between frame and neighbour
 			Double[] neighbourDifference = new Double[monoFrames.length];
 			for(int i =0;i<monoFrames.length-1;i++){
 				neighbourDifference[i]=Math.abs(monoFrames[i]-monoFrames[i+1]);
 			}
 			//last element doesn't have a right neighbour
 			neighbourDifference[neighbourDifference.length-1]=0.0;
+			
+			
 			exportWav(neighbourDifference, "neighbor.wav");
 			exportWav(monoFrames,"mono.wav");
+			exportWav(positiveMonoFrames,"positiveMono.wav");
+			
+			//calculates peaks
 		    int[] peaks = periodicPeaks(neighbourDifference,290);
-		    System.out.println(Arrays.toString(peaks));
-		    
-		    
-		    //TESTTT
-		    Double[] peakTest = new Double[neighbourDifference.length];
-		    peakTest[0]=1.0;
-		    Arrays.fill(peakTest, 0.0);
+		    //allows visualization of periodicPeaks
+		    Double[] peakVisualizer = new Double[neighbourDifference.length];
+		    peakVisualizer[0]=1.0;
+		    Arrays.fill(peakVisualizer, 0.0);
 		    for(int p: peaks){
-		    	peakTest[p]=1.0;
+		    	peakVisualizer[p]=1.0;
 		    }
-		    exportWav(peakTest,"peakTest.wav");
+		    exportWav(peakVisualizer,"peakVisualizer.wav");
 		    		
-		    //System.out.println(Arrays.toString(peaks));
+		    //DECRIPTS ARRAY
+		    //TRY WITH positiveMono and neighbourDifference
+		    int[] decrypted = WaveDecrypter.decript(positiveMonoFrames,peaks,290);
+		    ArrayList<Double> decryptedOut = new ArrayList<Double>();
+		    int[] originalMessage= {0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
+		    int[] decryptedMessage={0,1,0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0};
+		    System.out.println(originalMessage.length);
+		    
+		                           
+		    //print decrypted array to wave (hi-lo )
+		    Double[] decryptedBuffer = new Double[290];
+		    for(int d: decrypted){
+		    	if(d==1){
+		    		
+		    		Arrays.fill(decryptedBuffer, 0.0);
+		    	}else{
+		    		Arrays.fill(decryptedBuffer,1.0 );
+		    	}
+		    	decryptedOut.addAll(Arrays.asList(decryptedBuffer));
+		    }
+		    decryptedOut.addAll(Arrays.asList(decryptedBuffer));
+	    	Double[] decryptedArray = new Double[decryptedOut.size()];
+	    	decryptedOut.toArray(decryptedArray);
+		    exportWav(decryptedArray,"decrypted.wav");
+		    
+		    
+		    
+		    
+		    System.out.println(Arrays.toString(decrypted));
 		    
 //			exports array to txt file
 			BufferedWriter writer = null;
 		    try {
 
-		        writer = new BufferedWriter(new FileWriter("array.txt"));
-		        for ( int i = 0; i < neighbourDifference.length; i++)
+		        writer = new BufferedWriter(new FileWriter("decrypted.txt"));
+		        for ( int i = 0; i < decrypted.length; i++)
 		        {
-		            writer.write(String.valueOf(monoFrames[i]));
-		            writer.newLine();
-		            writer.flush();
+		            writer.write(String.valueOf(decrypted[i]));
+		            writer.write(",");
+		            //writer.flush();
 		        }
 
 		    } catch(IOException ex) {
