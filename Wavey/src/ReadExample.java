@@ -107,6 +107,9 @@ public class ReadExample
 			// Output the minimum and maximum value
 			
 			System.out.printf("Min: %f, Max: %f\n", min, max);
+			
+
+			exportWav(monoFrames, "test.wav");
 		}
 		catch (Exception e)
 		{
@@ -146,6 +149,7 @@ public class ReadExample
 		return periodicLocations;
 	}
 	// O(n)
+	public static Double[] normalise(Double[] input) {
 		// worst case for both
 		double max = -1;
 		double min = 1;
@@ -166,6 +170,7 @@ public class ReadExample
 		System.out.println(middle);
 		System.out.println(scale);
 
+		Double[] out = new Double[input.length];
 		for (int i = 0; i < input.length; i++) {
 			out[i] = (input[i] - middle) / (double) scale;
 		}
@@ -195,6 +200,28 @@ public class ReadExample
 		if (sumAfter / (double) sumBefore > threshold) return true;
 		return false;
 
+	}
+
+	public static void exportWav(Double[] input, String file) {
+	      try
+	      {
+				int sampleRate = 44100;
+				double duration = input.length / (double) sampleRate;
+				long numFrames = (long)(duration * sampleRate);
+				WavFile wavFile = WavFile.newWavFile(new File(file), 1, numFrames, 16, sampleRate);
+				double[][] buffer = new double[2][1];
+				for (int i = 0; i < numFrames; i++) {
+					buffer[0][0] = input[i];
+					buffer[1][0] = input[i];
+					wavFile.writeFrames(buffer, 1);
+				}
+	 
+			    wavFile.close();
+		  }
+		  catch (Exception e)
+		  {
+		     System.err.println(e);
+		  }
 	}
 }
 
